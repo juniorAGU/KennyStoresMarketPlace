@@ -25,6 +25,7 @@ const MyProducts = () => {
         { label: 'Total Products', value: myProducts?.length || 0 },
         { label: 'Available', value: myProducts?.filter(p => p.status === 'available').length || 0 },
         { label: 'Sold', value: myProducts?.filter(p => p.status === 'sold').length || 0 },
+        {label: "sold out", value: myProducts?.filter(p => p?.quantity === 0).length || 0 }
     ];
 
     return (
@@ -55,7 +56,7 @@ const MyProducts = () => {
                 </article>
 
                 
-                <article className='grid grid-cols-3 gap-4 mb-8'>
+                <article className='grid grid-cols-2 md:grid-cols-4 gap-4 mb-8'>
                     {stats.map((stat, index) => (
                         <article key={index} className='bg-[#252C26] rounded-xl p-4 text-center'>
                             <p className='text-white text-xl md:text-2xl font-bold'>{stat.value}</p>
@@ -124,13 +125,15 @@ const MyProducts = () => {
                                     {/* Status */}
                                     <article className='col-span-2 mb-3 md:mb-0'>
                                         <span className={`text-xs px-2 py-1 rounded-full ${
-                                            product.status === 'available' 
+                                            product?.quantity === 0
+                                            ? "bg-red-500/20 text-red-400"
+                                            : product.status === 'available' 
                                                 ? 'bg-green-500/20 text-green-400'
                                                 : product.status === 'sold'
                                                     ? 'bg-blue-500/20 text-blue-400'
                                                     : 'bg-yellow-500/20 text-yellow-400'
                                         }`}>
-                                            {product.status}
+                                            {product?.quantity === 0 ? "Sold Out" : product.status}
                                         </span>
                                     </article>
 

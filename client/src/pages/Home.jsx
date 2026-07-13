@@ -1,7 +1,7 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import Logo from '../Components/Logo';
-import { Menu, X } from 'lucide-react';
+import { Menu, X,ShoppingBasket } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Navbar from '../Components/Navbar';
 import { motion, scale } from 'framer-motion';
@@ -10,12 +10,20 @@ import HowItWorks from '../Components/HowitWorks';
 import Categories from '../Components/Categories';
 import UseAuth from '../Hooks/UseAuth';
 import UserDropdown from '../Components/UserDropdown';
+import UseCart from '../Hooks/UseCart';
 
 function Home() {
 
     const [isopen, setIsopen] = useState(false);
     const { isAuthenticated, user} = UseAuth();
-    console.log("Home - Auth state:", isAuthenticated, user);
+    const {cart, FetchCart} = UseCart();
+
+    const cartLenght = cart?.items?.lenght || 0;
+
+    useEffect(() => {
+        FetchCart();
+    }, []);
+    
 
 
     return (
@@ -32,6 +40,18 @@ function Home() {
                     <Logo />
 
                     <article className=' flex items-center gap-3 ml-auto'>
+                        {
+                            isAuthenticated && user.accountType === "buyer"
+                            ? <Link to='/cart' className='relative'>
+                                    <ShoppingBasket size={25} />
+                                    {cartLenght > 0 && (
+                                        <span className='absolute -top-2 -right-2 w-5 h-5 bg-[#7C9A7E] text-white text-xs rounded-full flex items-center justify-center'>
+                                            {cartLenght}
+                                        </span>
+                                    )}
+                                </Link>
+                            : ""
+                        }
 
                         {
                             isAuthenticated 

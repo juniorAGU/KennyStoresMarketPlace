@@ -36,6 +36,8 @@ const Cart = () => {
         
     };
 
+    console.log("cart Items", cart);
+
     const handleRemove = async (itemId) => {
         await RemoveItem(itemId);
         FetchCart();

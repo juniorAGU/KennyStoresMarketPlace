@@ -12,6 +12,10 @@ import MyProducts from "../pages/MyProducts";
 import EditeProduct from "../pages/EditeProduct";
 import Cart from "../pages/Cart";
 import Checkout from "../pages/Checkout";
+import Orders from "../pages/Orders";
+import OrdersDetails from "../pages/OrdersDetails";
+import SellersStore from "../pages/SellersStore";
+import SellerOrder from "../pages/SellerOrder";
 
 const Routes = [
     {
@@ -52,6 +56,32 @@ const Routes = [
         isProtected: true,
         role: ["user", "manager", "admin"],
         accountType: "buyer"
+    },
+    {
+        path: 'orders',
+        components: Orders,
+        isProtected: true,
+        role: ["user", "manager", "admin"],
+        accountType: "buyer"
+    },
+    {
+        path: 'orders/:orderId',
+        components: OrdersDetails,
+        isProtected: true,
+        role: ["user", "manager", "admin"],
+        accountType: "buyer"
+    },
+    {
+        path: 'seller/:sellerId',
+        components: SellersStore,
+        isProtected: true,
+        role: ["user", "manager", "admin"],
+    },
+    {
+        path: 'sellerOrders',
+        components: SellerOrder,
+        isProtected: true,
+        role: ["user", "manager", "admin"],
     },
     {
         path: "/addproduct",

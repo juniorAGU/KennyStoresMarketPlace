@@ -10,3 +10,53 @@ export const createCheckout = async (userdata) => {
 
     return data
 }
+
+export const verifyPaystackPayment = async (reference) => {
+
+    const { data } = await API.get(`/api/verify/${reference}`)
+
+    return data
+}
+
+export const getAllOrders = async () => {
+
+    const { data } = await API.get("/api/orders");
+
+    return data 
+}
+
+export const getSpec = async (orderId) => {
+    console.log(orderId)
+
+    const { data } = await API.get(`/api/orders/${orderId}`)
+
+    return data
+}
+
+export const getSellersinfo = async (sellerId) => {
+
+    const { data } = await API.get(`/api/seller/${sellerId}`);
+
+    return data
+}
+
+export const buyerDisput = async (orderId, reason) => {
+
+    const { data } = await API.post(`/api/orders/${orderId}`, { reason });
+
+    return data 
+}
+
+export const getsellersOrder = async () => {
+
+    const { data } = await API.get("/api/sellerorders");
+
+    return data
+}
+
+export const updateSellerOrders = async (orderId, status, trackingNumber) => {
+
+    const { data } = await API.patch(`/api/selleroders/${orderId}`, {status,trackingNumber})
+
+    return data
+}

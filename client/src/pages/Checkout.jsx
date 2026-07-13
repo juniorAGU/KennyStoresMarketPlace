@@ -10,6 +10,9 @@ import { createCheckout } from '../Services/OrderServces';
 const Checkout = () => {
     const navigate = useNavigate();
     const { cart, FetchCart } = UseCart();
+
+    
+
     const { user } = UseAuth();
     const { Showmessage, typColo, messages } = UseMessage();
     const [loading, setLoading] = useState(false);
@@ -28,22 +31,28 @@ const Checkout = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    console.log("cart Items", cart)
+
     const groupBySeller = () => {
         const grouped = {};
         cart?.items?.forEach(item => {
             const sellerId = item.product?.seller?._id || item.product?.seller || 'unknown';
             const sellerName = item.product?.seller?.name || 'Unknown Seller';
             if (!grouped[sellerId]) {
-                grouped[sellerId] = { sellerName, items: [], total: 0 };
+                grouped[sellerId] = { sellerName, items: [], total: 0, shippingFee: 0 };
             }
             grouped[sellerId].items.push(item);
             grouped[sellerId].total += item.price * item.quantity;
+            grouped[sellerId].shippingFee += (item.product?.shippingFee || 0);
+
+            console.log("Group after:", grouped[sellerId]);
         });
+        console.log("Final grouped:", grouped);
         return grouped;
     };
 
     const groupedOrders = groupBySeller();
-    const grandTotal = Object.values(groupedOrders).reduce((sum, g) => sum + g.total, 0);
+    const grandTotal = Object.values(groupedOrders).reduce((sum, g) => sum + (g.total + g.shippingFee), 0);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -55,9 +64,10 @@ const Checkout = () => {
 
         setLoading(true);
         try {
-            const { orders } = await createCheckout( {shippingAddress: formData} );
+            const { orders, authorization_url } = await createCheckout( {shippingAddress: formData} );
             Showmessage('success', 'Orders placed successfully!');
-            navigate('/orders');
+            window.location.href = authorization_url
+            // navigate('/orders');
         } catch (err) {
             Showmessage('failed', err?.response?.data?.message || 'Checkout failed');
         } finally {
@@ -123,6 +133,7 @@ const Checkout = () => {
                                                 <p className='text-[#7C9A7E] text-sm font-semibold'>
                                                     ₦{(item.price * item.quantity).toLocaleString()}
                                                 </p>
+                                                
                                             </article>
                                         ))}
                                     </article>
@@ -194,10 +205,16 @@ const Checkout = () => {
 
                                 <article className='space-y-2 text-sm mb-4'>
                                     {Object.entries(groupedOrders).map(([sellerId, group]) => (
+                                        <>
                                         <article key={sellerId} className='flex justify-between'>
                                             <span className='text-[#E8EDE8]/60'>{group.sellerName}</span>
                                             <span className='text-white'>₦{group.total.toLocaleString()}</span>
                                         </article>
+                                        <article className='flex justify-between'>
+                                            <span className='text-[#E8EDE8]/60'>shippingFee</span>
+                                            <span className='text-white'>₦{(group?.shippingFee || 0).toLocaleString()}</span>
+                                        </article>
+                                        </>
                                     ))}
                                 </article>
 

@@ -1,10 +1,12 @@
 import { useState, useEffect, createContext } from "react";
 import { createCart,getCart, updateCartItem, clearCart,removeFromCart } from "../Services/CartService";
+import { getAllOrders } from "../Services/OrderServces";
 
 
 export const CartContext = createContext();
 function Cartprovider({children}) {
     const [cart, setCart] =   useState([]);
+    const [order, setOrder] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -84,6 +86,22 @@ function Cartprovider({children}) {
 
     }
 
+    const getOrder = async () => {
+        setError(null);
+        setLoading(true)
+        try{
+
+            const { orders } = await getAllOrders();
+
+            setOrder(orders);
+
+        }catch(err){
+            console.log(err);
+            setError(err?.response?.data?.message || "unable to fetch orders");
+        }finally{
+            setLoading(false);
+        }
+    }
 
 
     const values = {
@@ -95,7 +113,9 @@ function Cartprovider({children}) {
         setCart,
         cart,
         loading,
-        error
+        error,
+        getOrder,
+        orders: order
     }
     return (
         <CartContext.Provider value={values}>

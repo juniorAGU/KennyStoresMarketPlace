@@ -79,6 +79,7 @@ function ProductDetails() {
 
                 {/* Seller & Product Info - Side by side */}
                 <article className='flex items-center justify-between mb-6'>
+                    <Link to={`/seller/${product.seller?._id}`}>
                     <article className='flex items-center gap-3'>
                         <img 
                             src={product.seller.image} 
@@ -90,6 +91,8 @@ function ProductDetails() {
                             <p className='text-[#E8EDE8]/50 text-xs'>{product.sold} sold</p>
                         </article>
                     </article>
+                    </Link>
+
                     <article className='flex items-center gap-1 text-yellow-400'>
                         <Star size={16} fill='currentColor' />
                         <span className='text-white text-sm font-semibold'>{product.rating}</span>
