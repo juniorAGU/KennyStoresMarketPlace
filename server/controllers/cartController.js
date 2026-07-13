@@ -63,12 +63,14 @@ const CreateCart = async (req,res,next) => {
 
         const created = await Cart.findById(exist._id)
                 .populate({path: "items.product",
-                    select: "name  image price seller", 
+                    select: "name  images price seller shippingFee", 
                     populate: {
                         path: "seller",
                         select: "name"
                 }})
                 .lean();
+                
+                console.log(created)
 
         res.status(200).json({
             success: true,
@@ -92,7 +94,7 @@ const getCart = async (req,res,next) => {
 
         const cart = await Cart.findOne({ user: userId })
             .populate({ path: "items.product",
-                select: "name images price seller",
+                select: "name images price seller shippingFee",
                 populate: {
                     path: "seller",
                     select: "name"

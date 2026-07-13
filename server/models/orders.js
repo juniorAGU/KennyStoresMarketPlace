@@ -21,7 +21,11 @@ const orderSchema = new Schema({
         name: String,
         image: String,
         quantity: Number,
-        price: Number
+        price: Number,
+        shippingFee : {
+            type: Number,
+            default: 0
+        }
     }],
     shippingAddress: {
         name: { 
@@ -46,10 +50,28 @@ const orderSchema = new Schema({
         enum: ['pending', 'paid', 'shipped', 'delivered', 'cancelled'],
         default: "pending"
     },
+    trackingNumber: {
+        type: String,
+        default: null
+    },
+    dispute: {
+        status: {
+            type: String,
+            enum: ['none', 'open', 'resolved', 'refunded'],
+            default: 'none'
+        },
+        reason: String,
+        createdAt: Date,
+        resolvedAt: Date
+    },
     paymentReference: {
         type: String,
         default: null
     },
+    paymentUrl : {
+        type: String,
+        default: null
+    }
 },{timestamps: true});
 
 export const Order = mongoose.model("Order", orderSchema)
