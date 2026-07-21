@@ -16,6 +16,7 @@ import Orders from "../pages/Orders";
 import OrdersDetails from "../pages/OrdersDetails";
 import SellersStore from "../pages/SellersStore";
 import SellerOrder from "../pages/SellerOrder";
+import SellerEarnings from "../pages/SellerEarnings";
 
 const Routes = [
     {
@@ -86,6 +87,13 @@ const Routes = [
     {
         path: "/addproduct",
         components: AddProduct,
+        isProtected: true,
+        role: ["user", "admin", "manager"],
+        accountType: "seller"
+    },
+    {
+        path: "/earnings",
+        components: SellerEarnings,
         isProtected: true,
         role: ["user", "admin", "manager"],
         accountType: "seller"

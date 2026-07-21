@@ -1,9 +1,10 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
-import { getsellersOrder, updateSellerOrders } from '../Services/OrderServces';
+import { getsellersOrder, updateSellerOrders, resolveDispute } from '../Services/OrderServces';
 import UseMessage from '../Hooks/UseMessage';
 import { ChevronLeft, Package, Truck, CheckCircle, Clock, Search, Loader2, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import UseAuth from '../Hooks/UseAuth';
 
 function SellerOrder() {
 
@@ -16,17 +17,21 @@ function SellerOrder() {
     const [updating, setUpdating] = useState(false);
     const [trackingNumber, setTrackingNumber] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
+    const [resolveloading, setResolveloading] = useState(false)
+    const { user} = UseAuth();
 
     useEffect(() => {
-        getsellersOrder()
-        .then(({orders}) => {
-            setOrders(orders)
-        })
-        .catch(err => {
-            setErr(err?.response?.data?.message ||  "unable to fetch orders")
-        })
-        .finally(() => setLoading(false))
-    },[]);
+        if(user?.accountType === 'seller'){
+            getsellersOrder()
+            .then(({orders}) => {
+                setOrders(orders)
+            })
+            .catch(err => {
+                setErr(err?.response?.data?.message ||  "unable to fetch orders")
+            })
+            .finally(() => setLoading(false))
+        }
+    },[user]);
 
     const filterOrders = orders
     .filter(o => filter === 'all' || o.status === filter)
@@ -99,7 +104,16 @@ function SellerOrder() {
     }
 
     const handleResolveDispute = async (orderid, data) => {
-
+        setResolveloading(true)
+        try{
+            await resolveDispute(orderid, data);
+            Showmessage('success', "Dispute resolved")
+        }catch(err){
+            console.log(err)
+            Showmessage("failed", err?.response?.data?.message || "unable to resolve Dispute")
+        }finally{
+            setResolveloading(false)
+        }
     };
 
 
@@ -196,16 +210,18 @@ function SellerOrder() {
                                         {order.dispute?.status === 'open' && (
                                             <article className='flex items-center gap-2'>
                                                 <button
+                                                    disabled={resolveloading}
                                                     onClick={() => handleResolveDispute(order._id, 'resolved')}
-                                                    className='px-3 py-1.5 bg-[#7C9A7E] text-white text-xs rounded-lg'
+                                                    className=' flex justify-center items-center px-3 py-1.5 bg-[#7C9A7E] hover:bg-[#5E7D61] transition-colors text-white text-xs rounded-lg'
                                                 >
-                                                    Mark Resolved
+                                                    {resolveloading ? <Loader2 size={10} className='animate-spin' /> : 'Mark Resolved'}
                                                 </button>
                                                 <button
+                                                    disabled={resolveloading}
                                                     onClick={() => handleResolveDispute(order._id, 'refunded')}
-                                                    className='px-3 py-1.5 bg-yellow-500/20 text-yellow-400 text-xs rounded-lg'
+                                                    className=' flex justify-center items-center px-3 py-1.5 bg-yellow-500/20 hover:bg-yellow-500/10 text-yellow-400 text-xs rounded-lg'
                                                 >
-                                                    Issue Refund
+                                                    {resolveloading ? <Loader2 size={16} className='animate-spin' /> : 'Issue Refund'}
                                                 </button>
                                             </article>
                                         )}

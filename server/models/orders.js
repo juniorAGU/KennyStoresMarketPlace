@@ -68,6 +68,14 @@ const orderSchema = new Schema({
         type: String,
         default: null
     },
+    refundReference: {
+        type: String,
+        default: null
+    },
+    refundAmount : {
+        type: Number,
+        default: null
+    },
     paymentUrl : {
         type: String,
         default: null

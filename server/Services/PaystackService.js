@@ -31,3 +31,76 @@ export const verifyPayment = async (reference) => {
 
     return response.data
 }
+
+export const refundResponse = async (paymentref, amount, buyer) => {
+
+    const response = await axios.post('https://api.paystack.co/refund',{
+        transaction: paymentref,
+        amount: amount * 100,
+        machant_note: `Refund for Dispute order, buyer ${buyer}`
+    },{
+        headers: {
+            Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+            "Content-Type": "application/json"
+        }
+    });
+    console.log(response.data)
+    return response.data
+
+}
+
+export const transferResponse = async (sellerId,amount,sellerCode) => {
+
+    const response = await axios.post('https://api.paystack.co/transfer',{
+        Source: 'balance',
+        amount: amount * 100,
+        recipient: sellerCode,
+        reason: `payout for ${sellerId}`,
+    },
+    {
+        headers : {
+            Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+            "Content-Type": "application/json"
+        }
+    });
+
+    console.log(response.data);
+
+    return response.data
+}
+
+export const recipiantFund = async (accoutName,accountNumber,bankCode) => {
+
+    const response =  await axios.post('https://api.paystack.co/transferrecipient',
+        {
+            type: 'nuban',
+            name: accoutName,
+            account_number: accountNumber,
+            bank_code: bankCode,
+            currency: 'NGN'
+        },
+        {
+            headers: {
+                Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`
+            },
+            timeout: 30000
+        },
+        
+    );
+
+    console.log("paystack response",response.data);
+    return response.data
+}
+
+export const bankNames = async () => {
+
+    const response =  await axios.get('https://api.paystack.co/bank',
+        {
+            headers: {
+                Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`
+            }
+        }
+    );
+
+    return response.data
+}

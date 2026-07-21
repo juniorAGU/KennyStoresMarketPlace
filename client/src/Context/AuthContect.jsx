@@ -11,9 +11,9 @@ function AuthContectProvider({children}) {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
 
-        const fetchUser = async () => {
+
+    const fetchUser = async () => {
 
             try{
 
@@ -29,7 +29,9 @@ function AuthContectProvider({children}) {
                 setLoading(false)
             }
 
-        }
+    }
+
+    useEffect(() => {
 
         fetchUser();
 
@@ -97,7 +99,7 @@ function AuthContectProvider({children}) {
         }
     }
 
-    const EditUser = async ({name,email,bio,title,location,phone,image}) => {
+    const EditUser = async ({name,email,bio,title,location,phone,image, accountName,accountNumber,bankcode}) => {
 
         setError(null);
 
@@ -111,6 +113,9 @@ function AuthContectProvider({children}) {
                 formdata.append("location", location);
                 formdata.append("phone", phone);
                 formdata.append("image", image);
+                formdata.append("accountName", accountName);
+                formdata.append("accountNumber", accountNumber);
+                formdata.append("bankcode", bankcode);
 
             const { user } = await updateUser(formdata);
 
@@ -136,6 +141,7 @@ function AuthContectProvider({children}) {
         logout,
         error,
         isAuthenticated: !!user,
+        fetchUser
 
     }
     return (

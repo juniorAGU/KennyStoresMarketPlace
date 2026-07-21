@@ -60,3 +60,17 @@ export const updateSellerOrders = async (orderId, status, trackingNumber) => {
 
     return data
 }
+
+export const resolveDispute = async (orderId, resolution) => {
+
+    const { data } = await API.post(`/api/selleroders/${orderId}`, { resolution })
+
+    return data
+}
+
+export const dashBoard = async() => {
+    
+    const { data } = await API.get('/api/seller/dashboard')
+
+    return data
+}

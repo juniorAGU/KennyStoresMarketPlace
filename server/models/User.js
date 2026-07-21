@@ -48,6 +48,19 @@ const userSchema = new Schema({
         enum: ["user", "admin", "manager"],
         default: "user"
     },
+    paystackRecipientCode: {
+        type: String,
+        default: null
+    },
+    accountNumber: {
+        type: String,
+    },
+    bankCode: {
+        type: String,
+    },
+    accountName: {
+        type: String,
+    },
     department: {
         type: String,
         required: true,

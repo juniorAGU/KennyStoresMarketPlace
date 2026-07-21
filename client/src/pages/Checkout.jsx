@@ -23,8 +23,10 @@ const Checkout = () => {
     });
 
     useEffect(() => {
-        FetchCart();
-    }, []);
+        if(user?.accountType === 'buyer'){
+            FetchCart();
+        }
+    }, [user]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -45,9 +47,7 @@ const Checkout = () => {
             grouped[sellerId].total += item.price * item.quantity;
             grouped[sellerId].shippingFee += (item.product?.shippingFee || 0);
 
-            console.log("Group after:", grouped[sellerId]);
         });
-        console.log("Final grouped:", grouped);
         return grouped;
     };
 

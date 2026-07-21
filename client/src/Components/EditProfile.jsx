@@ -1,15 +1,18 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Camera, ChevronLeft } from 'lucide-react';
 import UseAuth from '../Hooks/UseAuth';
-import { Eye, EyeOff,Loader2 } from "lucide-react"
+import { Eye, EyeOff,Loader2,Camera, ChevronLeft } from "lucide-react";
+import UseMessage from '../Hooks/UseMessage';
+import { Allbanks } from '../Services/PayoutService';
 
 function EditProfile() {
 
-    const { user, EditUser } = UseAuth();
+    const { user, EditUser,fetchUser } = UseAuth();
 
     const navigate = useNavigate();
+    const [bank, setBank] = useState([]);
+    const [bankloading, setBankloading] = useState(true)
 
     const [formData, setFormData] = useState({
         name: user?.name || '',
@@ -18,25 +21,29 @@ function EditProfile() {
         phone: user?.phone || '',
         title: user?.title || "",
         email: user?.email,
+        accountNumber: user?.accountNumber || "",
+        accountName: user?.accountName || "",
+        bankcode: user?.bankCode || "",
         loading: false
     });
 
     const [preview, setPreview] = useState(null);
     const [avarta, setAvata] = useState(user?.image || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQloFBXdJpz-BwRdlA2tRGZabgoHaMMy3DAyRilDT0FRgQ7YymDiws_mQl0bv4LBMWjSnmMZErUS_Efaqug6UobclXP3pvUgkiliBV7PH9v&s=10');
-    const [ messages, setMessages] = useState(null);
+    // const [ messages, setMessages] = useState(null);
+    const {messages,Showmessage,typColo} = UseMessage();
 
-    const typColo = {
-        "failed": "bg-red-500",
-        "warning": "bg-yellow-500",
-        "success": "bg-green-500"
-    };
+    useEffect(() => {
+        Allbanks()
+        .then(({banks}) => {
+            setBank(banks)
+        })
+        .catch(err => {
+            Showmessage('failed', err?.response?.data?.message || "unable to fetch Banks")
+        })
+        .finally(() => setBankloading(false))
+    },[]);
 
-    const Showmessage = (type,message) => {
-        setMessages({type,message});
-        setTimeout(()=> {
-            setMessages(null)
-        },3000)
-    }
+    
 
     const handleChange = (e) => {
 
@@ -78,12 +85,17 @@ function EditProfile() {
                 title: formData.title,
                 phone: formData.phone,
                 location: formData.location,
+                accountName: formData.accountName,
+                accountNumber: formData.accountNumber,
+                bankcode: formData.bankcode,
                 image: avarta
             };
 
             const success = EditUser(newData);
 
             if(success){
+                await fetchUser();
+                
                 setFormData({
                     name: user?.name || '',
                     bio: user?.bio || '',
@@ -91,6 +103,9 @@ function EditProfile() {
                     phone: user?.phone || '',
                     title: user?.title || "",
                     email: user?.email,
+                    accountNumber: user?.accountNumber || "",
+                    accountName: user?.accountName || "",
+                    bankcode: user?.bankCode || "",
                 });
                 navigate("/")
             }
@@ -215,6 +230,53 @@ function EditProfile() {
                         />
                     </article>
 
+
+                    {
+                        user?.accountType === 'seller' && (
+                            <article className='border-t border-[#252C26] pt-6'>
+                                <h2 className='text-white text-lg font-semibold mb-4'>Bank Details (For Payouts)</h2>
+                                
+                                <article>
+                                    <label className='block text-sm font-medium text-[#E8EDE8] mb-2'>Account Name</label>
+                                    <input 
+                                        name='accountName'
+                                        value={formData.accountName}
+                                        onChange={handleChange}
+                                        className='w-full px-4 py-3 bg-[#252C26] border border-[#7C9A7E] rounded-lg text-white placeholder-[#E8EDE8]/50 focus:outline-none focus:ring-2 focus:ring-[#7C9A7E] focus:border-transparent transition'
+                                    />
+                                </article>
+                                
+                                <article>
+                                    <label className='block text-sm font-medium text-[#E8EDE8] mb-2'>Bank Name / Code</label>
+                                    <select 
+                                        onChange={handleChange}
+                                        name='bankcode'
+                                        className='w-full px-4 py-3 bg-[#252C26] border border-[#7C9A7E] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#7C9A7E] focus:border-transparent transition'
+                                    >
+                                        <option value=''>{bankloading ? " Loading Banks" :'Select Bank'}</option>
+                                        {
+                                            bank?.map(banks => (
+                                                <option key={banks.code} value={banks.code}>{banks.name}</option>
+                                            ))
+                                        }
+                                    </select>
+                                </article>
+                                
+                                <article>
+                                    <label className='block text-sm font-medium text-[#E8EDE8] mb-2'>Account Number</label>
+                                    <input 
+                                        name='accountNumber' 
+                                        value={formData.accountNumber}
+                                        onChange={handleChange}
+                                        type='number'
+                                        min={0}
+                                        className='w-full px-4 py-3 bg-[#252C26] border border-[#7C9A7E] rounded-lg text-white placeholder-[#E8EDE8]/50 focus:outline-none focus:ring-2 focus:ring-[#7C9A7E] focus:border-transparent transition'
+                                    />
+                                </article>
+                            </article>
+                        )
+                    }
+
                     
                     
                     <button 
@@ -229,6 +291,7 @@ function EditProfile() {
                     </button>
 
                 </form>
+
 
             </article>
             {
