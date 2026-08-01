@@ -10,7 +10,7 @@ import { SetSellerFilter } from '../middlewears/Filters.js';
 
 export const productRouth = express.Router();
 
-productRouth.get("/api/products", protect, getProduct);
+productRouth.get("/api/products",  getProduct);
 productRouth.get("/api/products/my", protect, Authorize(["seller"]), SetSellerFilter, paginat(Products), getSellersProduct);
 
 productRouth.get("/api/products/:id",protect,getSpecificProduct)
