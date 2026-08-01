@@ -74,8 +74,8 @@ const CreatOneLog = async (req, res, next) => {
         res.cookie("token", token ,{
             httpOnly: true,
             maxAge: oneDayInMs,
-            secure: false,
-            sameSite: "lax"
+            secure: true,
+            sameSite: "none"
         });
 
         await LoginAudit.create({
