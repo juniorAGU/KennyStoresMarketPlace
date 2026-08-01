@@ -71,7 +71,7 @@ function SellerOrder() {
         const styles = {
             paid: 'bg-green-500/10 text-green-400 border-green-500/20',
             shipped: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-            delivered: 'bg-[#7C9A7E]/10 text-[#7C9A7E] border-[#7C9A7E]/20',
+            delivered: 'bg-purple-500/20 text-purple-400 border-[#7C9A7E]/20',
             pending: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
             disputed: "bg-red-500/10 text-red-400 border-red-500/20"
         };

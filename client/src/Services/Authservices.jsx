@@ -50,6 +50,41 @@ export const updateUser = async (formData) => {
 
 }
 
+export const switchAccount = async () => {
+
+    const { data } = await API.patch("/api/switch-account");
+
+    return data
+}
+
+export const changePassword = async (newData, oldData) => {
+
+    const { data } = await API.patch("/api/change-password", { newData, oldData});
+
+    return data
+}
+
+export const changeForgotten = async (email) => {
+
+    const { data } = await API.post("/api/forgot-password", { email});
+
+    return data
+}
+
+export const verify  = async (token,otp) => {
+
+    const { data } = await API.post("/api/verify-otp", { token, otp});
+
+    return data
+} 
+
+export const resetPas  = async (token,password) => {
+
+    const { data } = await API.patch("/api/reset-password", { token, password});
+
+    return data
+} 
+
 
 
 

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
 import UseAuth from '../Hooks/UseAuth';
 import { useEffect } from 'react';
-import {X,ShoppingBasket, House,ClockArrowUp,LayoutDashboard,Trophy, Handbag,CirclePlus,History, Info,Contact,Package,  CurrencyIcon} from 'lucide-react'
+import {X,ShoppingBasket, House,ClockArrowUp,LayoutDashboard,Trophy, Handbag,CirclePlus,History, Info,Contact,Package,  CurrencyIcon,} from 'lucide-react'
 
 function Navbar({setIsopen,isopen}) {
 

@@ -77,6 +77,14 @@ const userSchema = new Schema({
         required: true,
         default: 1
     },
+    resetOTP: {
+        code: String,
+        expiresAt: Date
+    },
+    resetToken: {
+        token: String,
+        expiresAt: Date
+    },
     createdAt: {
         type: Date,
         default: Date.now

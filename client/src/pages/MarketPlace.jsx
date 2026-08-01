@@ -279,7 +279,8 @@ const MarketPlace = () => {
                             </article>
 
                             {/* Add to Cart Button */}
-                            <article className='px-4 pb-4'>
+                            {user?.accountType === "buyer" 
+                            ? <article className='px-4 pb-4'>
                                 <motion.button
                                     onClick={async () => {
                                         setAddingToCart(prev => ({ ...prev, [product._id]: true }));
@@ -298,7 +299,10 @@ const MarketPlace = () => {
                                             outOfStock ? "Out Of Stock" : addingToCart[product._id] ? <Loader2 className="h-5 w-5 animate-spin text-white" /> : isMax ? "maximum in cart" : "Add to Cart"
                                         }
                                 </motion.button>
-                            </article>
+                            </article> 
+                            :
+                            ""}
+                            
                         </motion.article>
                         )
                     })}

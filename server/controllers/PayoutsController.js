@@ -29,8 +29,14 @@ const createPayout = async (req,res,next) => {
             {$group: {_id: null, total: {$sum: '$amount'}}}
         ])
 
+        const pendingPayout = await Order.aggregate([
+            {$match: {seller: sellerId, status: {$in: ['paid', 'shipped']}}},
+            {$group:  {_id: null, total: {$sum: '$totalAmount'}}}
+        ])
+
         const earning = toatalEarned[0]?.total || 0;
         const alreadyWithdrawn = withdrawn[0]?.total || 0;
+        const pendingMoney = pendingPayout[0]?.total || 0;
         
         const avaliableBalance = earning - alreadyWithdrawn;
 
@@ -52,16 +58,17 @@ const createPayout = async (req,res,next) => {
         const payout = await Payout.create({
             seller: sellerId,
             amount,
-            status: 'completed'
+            status: 'completed',
+            paymentRef: `SIM-${Date.now()}`
         });
 
         
-        const sellerCode =  seller.paystackRecipientCode;
+        // const sellerCode =  seller.paystackRecipientCode;
 
 
         // const respons =  await transferResponse(sellerId,amount,sellerCode);
 
-        payout.paymentRef = `SIM-${Date.now()}`;
+        // payout.paymentRef = `SIM-${Date.now()}`;
         // payout.status = respons.data.status === 'success' ? 'completed' : 'processing';
 
         await payout.save();
@@ -70,7 +77,10 @@ const createPayout = async (req,res,next) => {
             success: true,
             message: "Payout issued successfully",
             payout,
-            alreadyWithdrawn
+            alreadyWithdrawn,
+            earning,
+            avaliableBalance,
+            pendingMoney
         })
 
 
@@ -87,6 +97,27 @@ const getPayout = async (req,res,next) => {
 
         const sellerId = req.user._id;
 
+        const toatalEarned = await Order.aggregate([
+            {$match: {seller: sellerId, status:  'delivered'}},
+            {$group: {_id: null, total: {$sum: '$totalAmount'}}}
+        ]);
+
+        const withdrawn = await Payout.aggregate([
+            {$match: {seller: sellerId, status: {$in: ['completed','processing']}}},
+            {$group: {_id: null, total: {$sum: '$amount'}}}
+        ])
+
+        const pendingPayout = await Order.aggregate([
+            {$match: {seller: sellerId, status: {$in: ['paid', 'shipped']}}},
+            {$group:  {_id: null, total: {$sum: '$totalAmount'}}}
+        ])
+
+        const earning = toatalEarned[0]?.total || 0;
+        const alreadyWithdrawn = withdrawn[0]?.total || 0;
+        const pendingMoney = pendingPayout[0]?.total || 0;
+        
+        const avaliableBalance = earning - alreadyWithdrawn;
+
         const payouts = await Payout.find({seller: sellerId})
                     .sort({createdAt: -1})
                     .limit(10)
@@ -95,7 +126,11 @@ const getPayout = async (req,res,next) => {
         res.status(200).json({
             success: true,
             message: payouts.length ? "Successful" : "No payouts yet",
-            payouts
+            payouts,
+            alreadyWithdrawn,
+            earning,
+            avaliableBalance,
+            pendingMoney
         })
     }catch(err){
         console.log(err)

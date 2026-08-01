@@ -153,10 +153,99 @@ const UpdateUser = async(req,res,next) => {
 
 }
 
+const SwitchAcc = async (req,res,next) => {
+    try{
+        const userId = req.user._id;
+        
+        const user = await User.findById(userId);
+
+        if(!user){
+            return res.status(404).json({
+                success: false,
+                message: "user not found"
+            });
+        };
+
+        const newAccoutType =  user.accountType === 'buyer' ? 'seller' : 'buyer';
+
+        user.accountType = newAccoutType
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'successful',
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                accountType: user.accountType
+            }
+        })
+    }catch(err){
+        return res.status(500).json({
+            success: false,
+            message: "internal server Error",
+        })
+    }
+}
+
+const update = async (req,res,next) => {
+    try{
+        const cleaned = sanitizer(req.body);
+
+        const userId = req.user._id;
+
+        const {newData, oldData} = cleaned;
+
+        if(!newData || !oldData){
+            return res.status(400).json({
+                success: false,
+                message: "Bad user data"
+            });
+        };
+
+        const user = await User.findById(userId);
+
+        const formerPassword = user.password
+
+        const ismatch = await bcrypt.compare(oldData, formerPassword);
+
+        if(!ismatch){
+            return res.status(400).json({
+                success: false,
+                message: "incorrect password"
+            });
+        };
+
+        const hashed = await bcrypt.hash(newData,10);
+
+        user.password = hashed;
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: "successful",
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                accountType: user.accountType
+            }
+        })
+    }catch(err){
+        return res.status(500).json({
+            success: false,
+            message: "internal sever Error"
+        })
+    }
+}
+
 const GetUser = async (req,res,next) => {
     try{}catch(err){
         return console.log(err)
     }
 }
 
-export { CreateUser, GetUser, UpdateUser}
+export { CreateUser, GetUser, UpdateUser, SwitchAcc, update}

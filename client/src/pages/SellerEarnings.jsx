@@ -5,14 +5,19 @@ import { ChevronLeft, Wallet, ArrowDown, ArrowUp, Clock, CheckCircle, Loader2, X
 import Usepayout from '../Hooks/Usepayout';
 import UseAuth from '../Hooks/UseAuth';
 import UseMessage from '../Hooks/UseMessage';
+import { dashBoard } from '../Services/OrderServces';
 
 const SellerEarnings = () => {
-    const { payout,  Fetchpayouts, putPayouts, payoutloading } = Usepayout();
+    const { payout,  Fetchpayouts, putPayouts, payoutloading,withdrawn,pendingMoney,earning,balance, } = Usepayout();
+    console.log("earnings",earning,"available balance",balance, "pendingMoney",pendingMoney,"already withdrawn",withdrawn)
     const { user } = UseAuth();
     const { Showmessage, typColo, messages } = UseMessage();
     const [showWithdraw, setShowWithdraw] = useState(false);
     const [amount, setAmount] = useState('');
     const [withdrawLoading, setWithdrawLoading] = useState(false);
+    
+
+    
 
     useEffect(() => {
         if(user?.accountType === 'seller'){
@@ -20,9 +25,9 @@ const SellerEarnings = () => {
         }
     }, [user]);
 
-    const totalEarned = 825000; // Replace with fetched data
-    const totalPending = 150000;
-    const availableBalance = totalEarned - (payout?.reduce((sum, p) => sum + p.amount, 0) || 0);
+    const totalEarned = earning; 
+    const totalPending = pendingMoney;
+    const availableBalance = balance
 
     const handleWithdraw = async () => {
         if (!amount || amount <= 0) {

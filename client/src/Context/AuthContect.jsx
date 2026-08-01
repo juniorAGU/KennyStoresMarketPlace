@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState,useEffect,createContext } from 'react';
-import { registerUser,loginUser,getCurrentUser,logoutServices,clearCashedUser,updateUser } from '../Services/Authservices';
+import { registerUser,loginUser,getCurrentUser,logoutServices,clearCashedUser,updateUser, switchAccount,changePassword,changeForgotten, resetPas,verify } from '../Services/Authservices';
 
 
 
@@ -130,6 +130,53 @@ function AuthContectProvider({children}) {
         }
     }
 
+    const updatePassword = async (newData,oldData) => {
+        try{
+
+            const { user } = await changePassword(newData,oldData)
+
+            setUser(user)
+
+            return true;
+
+        }catch(err){
+            console.log(err)
+            throw new  err
+        }
+    } 
+    const updateAccountType = async () => {
+        try{
+
+            const { user } = await switchAccount();
+
+            setUser(user)
+
+        }catch(err){
+            console.log(err)
+        }
+    }
+
+    const forgottenPassword = async (email) => {
+
+        const { token } = await changeForgotten(email)
+
+        return token
+    }
+
+    const verification = async (token,otp) => {
+
+        const { resetToken} = await verify(token, otp)
+
+        return resetToken
+    }
+
+    const passwordReset = async (token,password) => {
+
+        const { message } = await resetPas(token,password)
+
+        return message
+    }
+
 
 
     const values = {
@@ -141,7 +188,12 @@ function AuthContectProvider({children}) {
         logout,
         error,
         isAuthenticated: !!user,
-        fetchUser
+        fetchUser,
+        updateAccountType,
+        updatePassword,
+        forgottenPassword,
+        verification,
+        passwordReset,
 
     }
     return (
