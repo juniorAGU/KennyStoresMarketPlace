@@ -2,6 +2,7 @@ import { Order } from "../models/orders.js";
 import sanitize from "mongo-sanitize";
 import { autoConfirmDelivery } from "../utils/autodelivery.js";
 import { Products } from "../models/Product.js";
+import { refundResponse } from "../Services/PaystackService.js";
 
 const GetsellersOrder = async (req,res,next) => {
     try{
@@ -108,20 +109,35 @@ const resolveDispute = async (req,res,next) => {
         }
 
         if(resolution === "refunded"){
-            order.status = "cancelled";
+            
 
-            for(const item of order.items){
-                await Products.findByIdAndUpdate(item.product, {
-                    $inc: {quantity: item.quantity}
-                })
+            const response = await refundResponse(order.paymentReference, order.totalAmount, order.buyer);
+
+            if(response?.data?.status === "processed"){
+
+                for(const item of order.items){
+                    await Products.findByIdAndUpdate(item.product, {
+                        $inc: {quantity: item.quantity}
+                    })
+                }
+
             }
+
+            order.status = "cancelled";
+            order.refundReference = response?.data?.reference;
+            order.refundAmount = order.totalAmount;
+        }else{
+            return res.status(400).json({
+                success: false,
+                message: "Refund could not be proccessed by PayStack"
+            })
         }
 
         await order.save();
 
         res.status(200).json({
             success: true,
-            message: "successful"
+            message: resolution === "refunded" ? "Order refunded successfully" : "Dispute resolved" 
         })
 
     }catch(err){
@@ -134,4 +150,48 @@ const resolveDispute = async (req,res,next) => {
 
 }
 
-export { GetsellersOrder,UpdateOrderstatus, resolveDispute}
+const sellerDasboard = async (req,res,next) => {
+    try{
+
+        const sellerId = req.user._id;
+
+        const totalSales = await Order.countDocuments({seller: sellerId, status: {$in: ['paid', 'shipped', 'delivered']}});
+
+        const activeProducts = await Products.countDocuments({seller: sellerId, status: "available", quantity: {$gt: 0}});
+
+        const recentOrders = await Order.find({seller: sellerId,})
+                .populate('buyer', 'name')
+                .sort({createdAt: -1})
+                .limit(5)
+                .lean();
+
+        const earnings = await Order.aggregate([
+            {$match: {seller: sellerId, status: {$in: ['paid','shipped', 'delivered']}}},
+            {$group: {_id: null, total: {$sum: '$totalAmount'}}}
+        ]);
+
+        const orders = await Order.countDocuments({seller: sellerId})
+
+        res.status(200).json({
+            success: true,
+            message: "your Dashboard stats",
+            stats: {
+                totalSales,
+                activeProducts,
+                recentOrders,
+                orders,
+                totalEarnings: earnings[0]?.total || 0
+            }
+        })
+
+
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({
+            success: false,
+            message: "internal server issues"
+        })
+    }
+}
+
+export { GetsellersOrder,UpdateOrderstatus, resolveDispute,sellerDasboard}

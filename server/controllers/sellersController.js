@@ -14,7 +14,7 @@ const getSeller = async (req,res,next) => {
         if(!finduser){
             return res.status(404).json({
                 success: false,
-                message: "usernot found"
+                message: "user not found"
             });
         };
 

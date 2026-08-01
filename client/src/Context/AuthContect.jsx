@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState,useEffect,createContext } from 'react';
-import { registerUser,loginUser,getCurrentUser,logoutServices,clearCashedUser,updateUser } from '../Services/Authservices';
+import { registerUser,loginUser,getCurrentUser,logoutServices,clearCashedUser,updateUser, switchAccount,changePassword,changeForgotten, resetPas,verify } from '../Services/Authservices';
 
 
 
@@ -11,9 +11,9 @@ function AuthContectProvider({children}) {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
 
-        const fetchUser = async () => {
+
+    const fetchUser = async () => {
 
             try{
 
@@ -29,7 +29,9 @@ function AuthContectProvider({children}) {
                 setLoading(false)
             }
 
-        }
+    }
+
+    useEffect(() => {
 
         fetchUser();
 
@@ -97,7 +99,7 @@ function AuthContectProvider({children}) {
         }
     }
 
-    const EditUser = async ({name,email,bio,title,location,phone,image}) => {
+    const EditUser = async ({name,email,bio,title,location,phone,image, accountName,accountNumber,bankcode}) => {
 
         setError(null);
 
@@ -111,6 +113,9 @@ function AuthContectProvider({children}) {
                 formdata.append("location", location);
                 formdata.append("phone", phone);
                 formdata.append("image", image);
+                formdata.append("accountName", accountName);
+                formdata.append("accountNumber", accountNumber);
+                formdata.append("bankcode", bankcode);
 
             const { user } = await updateUser(formdata);
 
@@ -125,6 +130,53 @@ function AuthContectProvider({children}) {
         }
     }
 
+    const updatePassword = async (newData,oldData) => {
+        try{
+
+            const { user } = await changePassword(newData,oldData)
+
+            setUser(user)
+
+            return true;
+
+        }catch(err){
+            console.log(err)
+            throw new  err
+        }
+    } 
+    const updateAccountType = async () => {
+        try{
+
+            const { user } = await switchAccount();
+
+            setUser(user)
+
+        }catch(err){
+            console.log(err)
+        }
+    }
+
+    const forgottenPassword = async (email) => {
+
+        const { token } = await changeForgotten(email)
+
+        return token
+    }
+
+    const verification = async (token,otp) => {
+
+        const { resetToken} = await verify(token, otp)
+
+        return resetToken
+    }
+
+    const passwordReset = async (token,password) => {
+
+        const { message } = await resetPas(token,password)
+
+        return message
+    }
+
 
 
     const values = {
@@ -136,6 +188,12 @@ function AuthContectProvider({children}) {
         logout,
         error,
         isAuthenticated: !!user,
+        fetchUser,
+        updateAccountType,
+        updatePassword,
+        forgottenPassword,
+        verification,
+        passwordReset,
 
     }
     return (

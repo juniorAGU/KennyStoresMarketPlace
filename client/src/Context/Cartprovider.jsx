@@ -1,6 +1,8 @@
 import { useState, useEffect, createContext } from "react";
 import { createCart,getCart, updateCartItem, clearCart,removeFromCart } from "../Services/CartService";
 import { getAllOrders } from "../Services/OrderServces";
+import UseAuth from "../Hooks/UseAuth";
+
 
 
 export const CartContext = createContext();
@@ -9,9 +11,13 @@ function Cartprovider({children}) {
     const [order, setOrder] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const {user} = UseAuth();
 
 
     const FetchCart =  async () => {
+        if(!user || user?.accountType !== 'buyer'){
+            return
+        }
         setError(null);
         setLoading(true)
         try{

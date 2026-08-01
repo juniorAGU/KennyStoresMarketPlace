@@ -106,7 +106,7 @@ const Header = () => {
                 <article className='p-6 pt-20'>
                     <button 
                         onClick={() => setIsopen(false)}
-                        className='text-[#E8EDE8] hover:text-[#7C9A7E] transition-colors ml-60 mb-10'
+                        className='text-[#E8EDE8] hover:text-[#7C9A7E] transition-colors ml-[79%] mb-10'
                     >
                         <X size={24} />
                     </button>

@@ -3,16 +3,20 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, Trash2, Minus, Plus, ShoppingBag, Loader2 } from 'lucide-react';
 import UseCart from '../Hooks/UseCart';
+import UseAuth from '../Hooks/UseAuth';
 import UseMessage from '../Hooks/UseMessage';
 
 const Cart = () => {
     const { AddToCart, FetchCart, UpdateCart, RemoveItem, cleraAllCart, cart, loading, error,setCart,} = UseCart();
     const {messages,Showmessage,typColo } = UseMessage();
+    const { user } = UseAuth();
     
 
     useEffect(() => {
-        FetchCart();
-    }, []);
+        if(user?.accountType === 'buyer'){
+            FetchCart();
+        }
+    }, [user]);
 
     const handleQuantity = async (itemId, newQty) => {
         if (newQty < 1) return;

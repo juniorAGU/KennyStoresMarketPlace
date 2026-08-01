@@ -144,14 +144,12 @@ function Home() {
 
                     
 
-                    <motion.Link
-                        whileHover={{scale: 1.05}}
-                        whileTap={{scale: 1.95}}
-                        to={'/register'} 
+                    <Link
+                        to={'/marketplace'} 
                         className='inline-block px-8 py-4 bg-[#7C9A7E] text-white font-semibold rounded-lg hover:bg-[#5E7D61] transition-colors text-lg'
                     >
                         Get Started - It's Free
-                    </motion.Link>
+                    </Link>
 
                 </article>
 

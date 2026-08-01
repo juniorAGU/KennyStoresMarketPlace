@@ -6,6 +6,9 @@ import { populate } from "dotenv";
 import { initializePayment, verifyPayment } from "../Services/PaystackService.js";
 import { autoConfirmDelivery } from "../utils/autodelivery.js";
 
+
+const COMISSION_RATES = process.env.COMMISSION_RATE;
+
 const CreateOrder = async (req,res,next) => {
     try{
         const cleaned = sanitize(req.body);
@@ -56,7 +59,8 @@ const CreateOrder = async (req,res,next) => {
 
         for(const [sellerId, items] of Object.entries(groupSeller)){
             const totalAmount = items.reduce((sum,pro) => sum + (pro.price * pro.quantity) + (pro?.shippingFee || 0),0);
-            grandTotal += totalAmount
+            const commission = totalAmount * COMISSION_RATES;
+            const sellerEarning = totalAmount - commission
 
             const order = await Order.create({
                 seller: sellerId,
@@ -64,6 +68,8 @@ const CreateOrder = async (req,res,next) => {
                 items,
                 shippingAddress,
                 totalAmount,
+                sellerEarning,
+                commission,
                 status: "pending",
             });
 

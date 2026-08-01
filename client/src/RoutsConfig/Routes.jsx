@@ -16,6 +16,11 @@ import Orders from "../pages/Orders";
 import OrdersDetails from "../pages/OrdersDetails";
 import SellersStore from "../pages/SellersStore";
 import SellerOrder from "../pages/SellerOrder";
+import SellerEarnings from "../pages/SellerEarnings";
+import Settings from "../Components/Settings";
+import ForgotPassword from "../Components/ForgotPassword";
+import VerifyOTP from "../Components/VerifyOtp";
+import ResetPassword from "../Components/ResetPassword";
 
 const Routes = [
     {
@@ -35,6 +40,34 @@ const Routes = [
         components: About,
         isProtected: false,
         role: ["user", "admin", "manager"]
+    },
+    {
+        path: "forgot-password",
+        components: ForgotPassword,
+        isProtected: false,
+        role: ["user", "admin", "manager"]
+    },
+    {
+        
+        path: "verify-otp",
+        components: VerifyOTP,
+        isProtected: false,
+        role: ["user", "admin", "manager"]
+        
+
+    },
+    {
+        path: "reset-password",
+        components: ResetPassword,
+        isProtected: false,
+        role: ["user", "admin", "manager"]
+    },
+    {
+        path: '/setting',
+        components: Settings,
+        isProtected: true,
+        role: ["user", "admin", "manager"]
+
     },
     {
         path: "dashboard",
@@ -86,6 +119,13 @@ const Routes = [
     {
         path: "/addproduct",
         components: AddProduct,
+        isProtected: true,
+        role: ["user", "admin", "manager"],
+        accountType: "seller"
+    },
+    {
+        path: "/earnings",
+        components: SellerEarnings,
         isProtected: true,
         role: ["user", "admin", "manager"],
         accountType: "seller"

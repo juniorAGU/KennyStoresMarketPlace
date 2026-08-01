@@ -1,21 +1,48 @@
 
 import { TrendingUp, Package, ShoppingBag, DollarSign, Wallet } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useState,useEffect } from 'react';
+import { dashBoard } from '../Services/OrderServces';
+import UseMessage from '../Hooks/UseMessage';
+import UseAuth from '../Hooks/UseAuth';
 
 const SellerDashboard = () => {
+    const [stat, setStat ] = useState({
+        totalSales: 0,
+        activeProducts: 0,
+        recentOrders: [],
+        totalEarnings: 0,
+        orders: 0
+    });
+    const [statloading, setStatloading] = useState(true);
+    const {messages, Showmessage,typColo} = UseMessage();
+    const {user } = UseAuth();
+
+    useEffect(()=> {
+        if(!user || user?.accountType === 'seller'){
+            dashBoard()
+            .then(({stats}) => {
+                setStat(stats)
+            })
+            .catch(err => {
+                console.log(err)
+                Showmessage('failed', err?.response?.data?.message || "unable to fetch dashboard")
+            })
+            .finally(
+                () => setStatloading(false)
+            )
+        }
+    },[user])
+
+    console.log(stat)
+
     const stats = [
-        { label: 'Total Sales', value: '$12,450', icon: TrendingUp, change: '+12%' },
-        { label: 'Active Products', value: '24', icon: Package, change: '3 new' },
-        { label: 'Orders Received', value: '156', icon: ShoppingBag, change: '+8%' },
-        { label: 'Earnings', value: '$8,320', icon: DollarSign, change: '+18%' },
+        { label: 'Total Sales', value: stat.totalSales, icon: TrendingUp, change: '+12%' },
+        { label: 'Active Products', value: stat.activeProducts, icon: Package, change: 'new' },
+        { label: 'Orders Received', value: stat.orders, icon: ShoppingBag, change: '+8%' },
+        { label: 'Earnings', value: `₦${Number(stat.totalEarnings).toLocaleString()}`, icon: DollarSign, change: '+18%' },
     ];
 
-    const recentOrders = [
-        { id: '#1001', product: 'Wireless Headphones', buyer: 'John Doe', amount: '$89.99', status: 'Pending' },
-        { id: '#1002', product: 'Classic Watch', buyer: 'Jane Smith', amount: '$129.99', status: 'Shipped' },
-        { id: '#1003', product: 'Modern Chair', buyer: 'Mike Ross', amount: '$199.99', status: 'Delivered' },
-        { id: '#1004', product: 'Laptop Stand', buyer: 'Sarah Lee', amount: '$49.99', status: 'Pending' },
-    ];
 
     const quickActions = [
         { label: 'Add New Product', to: '/addproduct', color: 'bg-[#7C9A7E] hover:bg-[#5E7D61]' },
@@ -66,28 +93,32 @@ const SellerDashboard = () => {
                     <article className='bg-[#252C26] rounded-xl p-5 border border-[#252C26]'>
                         <article className='flex items-center justify-between mb-4'>
                             <h2 className='text-white font-semibold'>Recent Orders</h2>
-                            <Link to='/dashboard/orders' className='text-[#7C9A7E] text-xs hover:underline'>View All</Link>
+                            <Link to='/sellerOrders' className='text-[#7C9A7E] text-xs hover:underline'>View All</Link>
                         </article>
                         
                         <article className='space-y-3'>
-                            {recentOrders.map((order, index) => (
-                                <article key={index} className='flex items-center justify-between py-3 border-b border-[#1A1E1B] last:border-0'>
+                            {stat.recentOrders.map((order, index) => {
+                                return(
+                                    <article key={order._id} className='flex items-center justify-between py-3 border-b border-[#1A1E1B] last:border-0'>
                                     <article>
-                                        <p className='text-white text-sm font-medium'>{order.product}</p>
-                                        <p className='text-[#E8EDE8]/50 text-xs'>{order.id} • {order.buyer}</p>
+                                        <p className='text-white text-sm font-medium'>{order.items?.[0]?.name}</p>
+                                        <p className='text-[#E8EDE8]/50 text-xs'>{order._id.toString().slice(-8)} • {order.buyer?.name}</p>
                                     </article>
                                     <article className='text-right'>
-                                        <p className='text-white text-sm font-semibold'>{order.amount}</p>
+                                        <p className='text-white text-sm font-semibold'>₦{Number(order?.totalAmount).toLocaleString()}</p>
                                         <span className={`text-xs px-2 py-0.5 rounded-full ${
-                                            order.status === 'Delivered' ? 'bg-green-500/20 text-green-400' :
-                                            order.status === 'Shipped' ? 'bg-blue-500/20 text-blue-400' :
+                                            order.status === 'delivered' ? 'bg-purple-500/20 text-purple-400' :
+                                            order.status === 'shipped' ? 'bg-blue-500/20 text-blue-400' :
+                                            order.status === 'paid' ? 'bg-green-500/20 text-green-400' :
                                             'bg-yellow-500/20 text-yellow-400'
                                         }`}>
                                             {order.status}
                                         </span>
                                     </article>
                                 </article>
-                            ))}
+                                )
+                                
+                            })}
                         </article>
                     </article>
 
@@ -101,15 +132,15 @@ const SellerDashboard = () => {
                         <article className='space-y-4'>
                             <article className='flex items-center justify-between'>
                                 <span className='text-[#E8EDE8]/60 text-sm'>Total Earnings</span>
-                                <span className='text-white font-bold text-lg'>$8,320</span>
+                                <span className='text-white font-bold text-lg'>₦{stat.totalEarnings.toLocaleString()}</span>
                             </article>
                             <article className='flex items-center justify-between'>
                                 <span className='text-[#E8EDE8]/60 text-sm'>Pending Payouts</span>
-                                <span className='text-yellow-400 font-semibold'>$1,250</span>
+                                <span className='text-yellow-400 font-semibold'>₦1,250</span>
                             </article>
                             <article className='flex items-center justify-between'>
                                 <span className='text-[#E8EDE8]/60 text-sm'>Available for Withdrawal</span>
-                                <span className='text-[#7C9A7E] font-semibold'>$7,070</span>
+                                <span className='text-[#7C9A7E] font-semibold'>₦7,070</span>
                             </article>
                         </article>
 

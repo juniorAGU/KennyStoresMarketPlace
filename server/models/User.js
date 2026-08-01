@@ -48,6 +48,19 @@ const userSchema = new Schema({
         enum: ["user", "admin", "manager"],
         default: "user"
     },
+    paystackRecipientCode: {
+        type: String,
+        default: null
+    },
+    accountNumber: {
+        type: String,
+    },
+    bankCode: {
+        type: String,
+    },
+    accountName: {
+        type: String,
+    },
     department: {
         type: String,
         required: true,
@@ -63,6 +76,14 @@ const userSchema = new Schema({
         type: Number,
         required: true,
         default: 1
+    },
+    resetOTP: {
+        code: String,
+        expiresAt: Date
+    },
+    resetToken: {
+        token: String,
+        expiresAt: Date
     },
     createdAt: {
         type: Date,

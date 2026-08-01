@@ -5,36 +5,19 @@ import bgImage from '../assets/pawel-czerwinski-pC8e7FFONcI-unsplash.jpg';
 import UseAuth from '../Hooks/UseAuth';
 import { Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import UseMessage from '../Hooks/UseMessage';
 
 function Login() {
 
     const navigate = useNavigate();
-
-    const [messages, setMessages] = useState(null);
-
     const [data, setData] = useState({
         email: "",
         password: "",
         loading: false
     });
+    const {login, fetchUser} = UseAuth();
+    const {messages, typColo, Showmessage} = UseMessage();
 
-    const {login} = UseAuth();
-
-    const typColo = {
-        "success": "bg-green-700",
-        "warning": "bg-yellow-400",
-        "failed": "bg-red-500"
-    }
-
-    const ShowMessages = (type,message) => {
-
-        setMessages({type,message});
-
-        setTimeout(()=>{
-            setMessages(null)
-        },3000)
-
-    }
 
 
     const handleChange = (e) => {
@@ -53,21 +36,21 @@ function Login() {
 
         if(data.email === "" || data.password === ""){
 
-            ShowMessages("failed", "input must not be Empty!!!");
+            Showmessage("failed", "input must not be Empty!!!");
 
             return;
         };
         
         if(data.password.length < 8){
 
-            ShowMessages("failed", "password must be greater than 9 characteres!!!");
+            Showmessage("failed", "password must be greater than 9 characteres!!!");
 
             return;
         };
 
         if(!/[A-Z]/.test(data.password)){
 
-            ShowMessages("warning", "inputs must contain one Alphabet!!!");
+            Showmessage("warning", "inputs must contain one Alphabet!!!");
 
             return;
         };
@@ -88,7 +71,7 @@ function Login() {
                     email: "",
                     password: "",
                 });
-
+                // fetchUser();
                 navigate('/marketplace')
             }
         }catch(err){

@@ -79,6 +79,13 @@ const UserDropdown = ({ user }) => {
                         <LogOut size={16} />
                         Logout
                     </button>
+                    <Link 
+                        to={'setting'}
+                        className='flex items-center gap-3 px-4 py-2 text-[#E8EDE8] text-sm hover:bg-[#1A1E1B] transition-colors w-full'
+                    >
+                        <Settings size={16} />
+                        Settings
+                    </Link>
                 </article>
             )}
 

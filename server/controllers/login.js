@@ -83,17 +83,16 @@ const CreatOneLog = async (req, res, next) => {
             status: 'success',
             ipadress: IpAddress,
             userAgent: UserAgent
-        })
+        });
+
+        const { password: hashedPassword, ...rest} = checkExistence.toObject();
 
         res.status(200).json({
             success: true,
             message: "successful",
             user: {
-                id: checkExistence._id,
-                name: checkExistence.name,
-                email: checkExistence.email,
-                role: checkExistence.role,
-                accountType: checkExistence.accountType  
+                id: rest._id,
+                ...rest
             }
         })
     }catch(err){

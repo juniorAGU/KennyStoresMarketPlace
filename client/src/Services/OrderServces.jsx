@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API = axios.create({baseURL: "http://localhost:5000"});
+const API = axios.create({baseURL: import.meta.env.VITE_API_BASE_URL});
 
 API.defaults.withCredentials = true
 
@@ -57,6 +57,20 @@ export const getsellersOrder = async () => {
 export const updateSellerOrders = async (orderId, status, trackingNumber) => {
 
     const { data } = await API.patch(`/api/selleroders/${orderId}`, {status,trackingNumber})
+
+    return data
+}
+
+export const resolveDispute = async (orderId, resolution) => {
+
+    const { data } = await API.post(`/api/selleroders/${orderId}`, { resolution })
+
+    return data
+}
+
+export const dashBoard = async() => {
+    
+    const { data } = await API.get('/api/seller/dashboard')
 
     return data
 }

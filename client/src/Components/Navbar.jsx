@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
 import UseAuth from '../Hooks/UseAuth';
 import { useEffect } from 'react';
-import {X,ShoppingBasket, House,ClockArrowUp,LayoutDashboard,Trophy, Handbag,CirclePlus,History, Info,Contact,Package} from 'lucide-react'
+import {X,ShoppingBasket, House,ClockArrowUp,LayoutDashboard,Trophy, Handbag,CirclePlus,History, Info,Contact,Package,  CurrencyIcon,} from 'lucide-react'
 
 function Navbar({setIsopen,isopen}) {
 
@@ -84,6 +84,16 @@ function Navbar({setIsopen,isopen}) {
                         >
                             <History size={20}/>
                             My Orders
+                        </NavLink>
+
+                        <NavLink 
+                            to={'/earnings'} 
+                            className={({isActive}) => `flex items-center gap-2 text-[#E8EDE8]  transition-colors py-2 ${isActive ? 'bg-[#7C9A7E] text-white font-medium pl-2 rounded-md' 
+                            : 'text-[#E8EDE8] hover:bg-[#1A1E1B] hover:text-[#7C9A7E] pl-2 rounded-md'}`}
+                            onClick={() => setIsopen(false)}
+                        >
+                            < CurrencyIcon size={20}/>
+                            My Earnings
                         </NavLink>
                     </> : ""
             }
