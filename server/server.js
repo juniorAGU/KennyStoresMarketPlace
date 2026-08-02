@@ -26,10 +26,12 @@ import { webHookRouter } from './routes/paystackRouth.js';
 
 
 const app = express();
+app.set('trust proxy', 1);
 app.use(helmet());
 
 app.use(cors({
     origin: ["https://kenny-stores-market-place.vercel.app"],
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     credentials: true
 }));
 ConnectDB();
