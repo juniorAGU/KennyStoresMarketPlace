@@ -64,7 +64,8 @@ const CreateUser = async (req, res, next ) => {
                 email: newUser.email,
                 role: newUser.role,
                 accountType: newUser.accountType  
-            }
+            },
+            token
         });
 
 

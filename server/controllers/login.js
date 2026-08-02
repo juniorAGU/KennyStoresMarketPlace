@@ -93,7 +93,8 @@ const CreatOneLog = async (req, res, next) => {
             user: {
                 id: rest._id,
                 ...rest
-            }
+            },
+            token
         })
     }catch(err){
         return console.log(err)

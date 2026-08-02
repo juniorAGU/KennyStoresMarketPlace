@@ -1,8 +1,5 @@
-import axios from "axios";
+import API from "./axiosConfig";
 
-const API = axios.create({baseURL: import.meta.env.VITE_API_BASE_URL });
-
-API.defaults.withCredentials = true;
 
 export const SendComment = async (productId,text) => {
 

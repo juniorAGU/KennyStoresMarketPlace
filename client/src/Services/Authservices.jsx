@@ -1,14 +1,13 @@
-import axios from "axios";
+import API from "./axiosConfig";
 
-const API = axios.create({baseURL: import.meta.env.VITE_API_BASE_URL});
-
-API.defaults.withCredentials = true;
 
 let cashedUser = null;
 
 export const registerUser = async (userDater) => {
 
-    const { data } = await API.post("/api/register", userDater);
+    const { data, token} = await API.post("/api/register", userDater);
+
+    localStorage.setItem('token',token)
 
     cashedUser = null;
 
@@ -17,7 +16,8 @@ export const registerUser = async (userDater) => {
 
 export const loginUser = async (userdata) => {
 
-    const { data } = await API.post("/api/login", userdata);
+    const { data,token } = await API.post("/api/login", userdata);
+    localStorage.setItem('token',token)
 
     cashedUser = null;
 
@@ -36,6 +36,8 @@ export const getCurrentUser = async () => {
 export const logoutServices = async () => {
 
     const { data } = await API.post("/api/logout");
+
+    localStorage.removeItem('token')
 
     return data
 };
