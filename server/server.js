@@ -29,7 +29,7 @@ const app = express();
 app.use(helmet());
 
 app.use(cors({
-    origin: ["https://kenny-stores-market-place.vercel.app/"],
+    origin: ["https://kenny-stores-market-place.vercel.app"],
     credentials: true
 }));
 ConnectDB();
