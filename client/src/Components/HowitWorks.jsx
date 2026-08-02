@@ -81,7 +81,7 @@ const HowItWorks = () => {
                         className='inline-block'
                     >
                         <Link 
-                            to={'/register'} 
+                            to={'/marketplace'} 
                             className='inline-block px-8 py-4 bg-[#7C9A7E] text-white font-semibold rounded-lg hover:bg-[#5E7D61] transition-colors text-lg'
                         >
                             Start Selling Today

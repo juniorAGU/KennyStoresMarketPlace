@@ -20,6 +20,7 @@ import { orderRouter } from './routes/orderRoutes.js';
 import { sellersRoute } from './routes/sellersroute.js';
 import { SellersOrdersRoutes } from './routes/sellersOrdersRoutes.js';
 import { PayoutRout } from './routes/PayoutRoutes.js';
+import { webHookRouter } from './routes/paystackRouth.js';
 
 
 
@@ -32,6 +33,7 @@ app.use(cors({
     credentials: true
 }));
 ConnectDB();
+app.use('/api/paystack/webhook',express.raw({ type: 'application/json'}))
 app.use(express.json());
 app.use(cookiePerser());
 app.use(xss());
@@ -51,7 +53,8 @@ app.use("/", CartRoutes);
 app.use("/", orderRouter);
 app.use("/", SellersOrdersRoutes);
 app.use("/", sellersRoute);
-app.use("/", PayoutRout)
+app.use("/", PayoutRout);
+app.use('/', webHookRouter)
 
 
 

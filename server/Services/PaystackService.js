@@ -1,4 +1,5 @@
 import axios from 'axios';
+import crypto from 'crypto'
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 
@@ -103,4 +104,13 @@ export const bankNames = async () => {
     );
 
     return response.data
+}
+
+export const webHookVerification = (payload,signature) => {
+
+    const hash = crypto.createHmac('sha512', PAYSTACK_SECRET_KEY)
+                .update(JSON.stringify(payload))
+                .digest('hex');
+
+    return hash === signature
 }

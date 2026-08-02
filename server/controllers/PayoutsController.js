@@ -3,6 +3,7 @@ import { Order } from "../models/orders.js";
 import sanitize from "mongo-sanitize";
 import { transferResponse,bankNames } from "../Services/PaystackService.js";
 import { User } from "../models/User.js";
+import { webHookVerification } from "../Services/PaystackService.js";
 
 const createPayout = async (req,res,next) => {
     try{
@@ -19,9 +20,16 @@ const createPayout = async (req,res,next) => {
             });
         };
 
+        if(amount < 5000){
+            return res.status(400).json({
+                success: false,
+                message: 'minimum limits for withdrawals'
+            })
+        }
+
         const toatalEarned = await Order.aggregate([
             {$match: {seller: sellerId, status:  'delivered'}},
-            {$group: {_id: null, total: {$sum: '$totalAmount'}}}
+            {$group: {_id: null, total: {$sum: '$sellerEarning'}}}
         ]);
 
         const withdrawn = await Payout.aggregate([
@@ -31,7 +39,7 @@ const createPayout = async (req,res,next) => {
 
         const pendingPayout = await Order.aggregate([
             {$match: {seller: sellerId, status: {$in: ['paid', 'shipped']}}},
-            {$group:  {_id: null, total: {$sum: '$totalAmount'}}}
+            {$group:  {_id: null, total: {$sum: '$sellerEarning'}}}
         ])
 
         const earning = toatalEarned[0]?.total || 0;
@@ -46,6 +54,13 @@ const createPayout = async (req,res,next) => {
                 message: "insufficient  avalaible balance"
             });
         };
+        
+        if(avaliableBalance - amount < 5000){
+            return res.status(400).json({
+                success: false,
+                message: 'You must leave at least ₦5,000 in your account.'
+            })
+        }
 
         const seller = await User.findById(sellerId);
         if (!seller.paystackRecipientCode) {
@@ -58,18 +73,18 @@ const createPayout = async (req,res,next) => {
         const payout = await Payout.create({
             seller: sellerId,
             amount,
-            status: 'completed',
-            paymentRef: `SIM-${Date.now()}`
+            status: 'pending',
+            // paymentRef: `SIM-${Date.now()}`
         });
 
         
-        // const sellerCode =  seller.paystackRecipientCode;
+        const sellerCode =  seller.paystackRecipientCode;
 
 
-        // const respons =  await transferResponse(sellerId,amount,sellerCode);
+        const respons =  await transferResponse(sellerId,amount,sellerCode);
 
-        // payout.paymentRef = `SIM-${Date.now()}`;
-        // payout.status = respons.data.status === 'success' ? 'completed' : 'processing';
+        payout.paymentRef = respons.data.reference;
+        payout.status = respons.data.status === 'success' ? 'completed' : 'processing';
 
         await payout.save();
 
