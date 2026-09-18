@@ -171,6 +171,7 @@ const MarketPlace = () => {
                 {/* Product Cards — Instagram style */}
                 <article className='space-y-8'>
                     {FilterProducts.map((product, index) => {
+                        console.log("products", FilterProducts)
                         
                         const cartQuantity = GetQuantityforcart(product._id);
                         const isMax = cartQuantity >= product.quantity;
@@ -188,19 +189,19 @@ const MarketPlace = () => {
                             {/* Seller Info */}
                             <article className='flex items-center gap-3 p-4'>
                                 <img 
-                                    src={product.seller.image} 
-                                    alt={product.seller.name}
+                                    src={product?.seller?.image || 'unknown Seller'} 
+                                    alt={product?.seller?.name || 'unknown Seller'}
                                     className='w-10 h-10 rounded-full object-cover'
                                 />
-                                <span className='text-white font-semibold text-sm'>{product.seller.name}</span>
+                                <span className='text-white font-semibold text-sm'>{product?.seller?.name || 'unknown Seller'}</span>
                             </article>
 
                             {/* Product Image */}
                             <article className='w-full aspect-square overflow-hidden'>
                                 <Link to={`/marketplace/${product._id}`}>
                                     <img 
-                                        src={product.images[1]} 
-                                        alt={product.name}
+                                        src={product?.images[1] || 'default-avatar.png'} 
+                                        alt={product?.name || 'unknown Seller'}
                                         className='w-full h-full object-cover'
                                     />
                                 </Link>

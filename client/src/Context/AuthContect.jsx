@@ -159,8 +159,9 @@ function AuthContectProvider({children}) {
     const forgottenPassword = async (email) => {
 
         const { token } = await changeForgotten(email)
-
+        console.log("token", token)
         return token
+        
     }
 
     const verification = async (token,otp) => {

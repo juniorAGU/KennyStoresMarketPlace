@@ -95,7 +95,7 @@ const Routes = [
         components: Orders,
         isProtected: true,
         role: ["user", "manager", "admin"],
-        accountType: "buyer"
+        accountType: ["buyer"]
     },
     {
         path: 'orders/:orderId',
