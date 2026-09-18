@@ -3,13 +3,13 @@ import crypto from 'crypto'
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 
-export const initializePayment = async (userEmail, grandTotal,userId,ordersIds) => {
+export const initializePayment = async (userEmail, grandTotal,userId,orderIds) => {
     const response = await axios.post("https://api.paystack.co/transaction/initialize", {
         email: userEmail,
         amount: grandTotal * 100,
         callback_url: process.env.PAYSTACK_CALLBACK_URL,
         metadata: {
-            ordersIds,
+            orderIds,
             userId: userId.toString()
         }
     },{
@@ -109,7 +109,7 @@ export const bankNames = async () => {
 export const webHookVerification = (payload,signature) => {
 
     const hash = crypto.createHmac('sha512', PAYSTACK_SECRET_KEY)
-                .update(JSON.stringify(payload))
+                .update(payload)
                 .digest('hex');
 
     return hash === signature

@@ -10,31 +10,32 @@ const PaystackwebHook = async (req,res,next) => {
             return res.status(400).send('Invalid signature');
         };
 
-        const event = req.body;
+        const event = JSON.parse(req.body.toString());
+        console.log("Paystack Webhook Event:", event);
         
         if(event.event === 'charge.success'){
             const reference = event.data.reference;
-            await Order.updateMany({
-                paymentReference: reference,
-                status: 'paid'
-            })
+            await Order.updateMany(
+                {paymentReference: reference},
+                {status: 'paid'}
+            )
         }
 
         if(event.event === 'transfer.success'){
             const reference = event.data.reference;
-            await Payout.findOneAndUpdate({
-                paymentRef: reference,
-                status: 'completed'
-            })
+            await Payout.findOneAndUpdate(
+                {paymentRef: reference},
+                {status: 'completed'}
+            );
 
         }
 
         if(event.event === 'transfer.failed'){
             const reference = event.data.reference;
-            await Payout.findOneAndUpdate({
-                paymentRef: reference,
-                status: 'failed'
-            });
+            await Payout.findOneAndUpdate(
+                {paymentRef: reference},
+                {status: 'failed'}
+            );
         }
 
         res.sendStatus(200);

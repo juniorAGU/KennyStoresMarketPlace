@@ -50,8 +50,8 @@ const CreateUser = async (req, res, next ) => {
         res.cookie("token", token ,{
             httpOnly: true,
             maxAge: oneDayInMs,
-            secure: true,
-            samSite: "none"
+            secure:  process.env.NODE_ENV === 'production',
+            samSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
         });
 
 

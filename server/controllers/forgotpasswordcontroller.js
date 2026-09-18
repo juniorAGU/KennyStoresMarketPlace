@@ -43,6 +43,7 @@ const forgotPassword = async (req,res,next) => {
         })
 
         await sendEmail(email, otp);
+        console.log("token", token)
 
         res.status(200).json({
             success: true,

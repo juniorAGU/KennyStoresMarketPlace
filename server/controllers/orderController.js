@@ -39,13 +39,13 @@ const CreateOrder = async (req,res,next) => {
         
 
         cart.items.forEach(item => {
-            const sellerId = item.product.seller._id.toString();
+            const sellerId = item.product?.seller?._id.toString();
             if(!groupSeller[sellerId]){
                 groupSeller[sellerId] = [];
             }
             groupSeller[sellerId].push({
-                product: item.product._id,
-                name: item.product.name,
+                product: item.product?._id,
+                name: item.product?.name,
                 price: item.price,
                 quantity: item.quantity,
                 image: item.product?.images?.[0],
@@ -62,6 +62,8 @@ const CreateOrder = async (req,res,next) => {
             const commission = totalAmount * COMISSION_RATES;
             const sellerEarning = totalAmount - commission
 
+            grandTotal += totalAmount;
+            
             const order = await Order.create({
                 seller: sellerId,
                 buyer: userId,
@@ -72,11 +74,12 @@ const CreateOrder = async (req,res,next) => {
                 commission,
                 status: "pending",
             });
-
+        
             orders.push(order)
         }
 
         const orderIds = orders.map(o => o._id.toString()).join(',')
+        console.log("orderIds", orderIds)
 
         const initpay = await initializePayment(userEmail,grandTotal,userId, orderIds)
 
@@ -130,7 +133,7 @@ const verifyOrders = async (req,res,next) => {
                 message: "payment was not successful"
             })
         }
-        const orderIds = metadata.ordersIds.split(',');
+        const orderIds = metadata.orderIds.split(',');
         const userId = metadata.userId;
 
         await Order.updateMany({_id: {$in: orderIds}}, {status: "paid"});
