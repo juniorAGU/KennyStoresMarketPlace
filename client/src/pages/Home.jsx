@@ -10,19 +10,16 @@ import HowItWorks from '../Components/HowitWorks';
 import Categories from '../Components/Categories';
 import UseAuth from '../Hooks/UseAuth';
 import UserDropdown from '../Components/UserDropdown';
-import UseCart from '../Hooks/UseCart';
+import { useCart } from '../Hooks/UseCart';
 
 function Home() {
 
     const [isopen, setIsopen] = useState(false);
     const { isAuthenticated, user} = UseAuth();
-    const {cart, FetchCart} = UseCart();
+    const {data:cart, isLoading} = useCart();
 
     const cartLenght = cart?.items?.lenght || 0;
 
-    useEffect(() => {
-        FetchCart();
-    }, []);
     
 
 

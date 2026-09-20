@@ -4,7 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Heart, MessageCircle, ChevronLeft, Star, Truck, ShieldCheck, RotateCcw } from 'lucide-react';
 import UseProducts from '../Hooks/UseProducts';
 import {Loader2} from 'lucide-react';
-import UseCart from '../Hooks/UseCart';
+import {useCart, useAddToCart} from '../Hooks/UseCart';
 import UseAuth from '../Hooks/UseAuth';
 import { motion } from 'framer-motion';
 import UseMessage from '../Hooks/UseMessage';
@@ -14,7 +14,8 @@ function ProductDetails() {
     const [quantity, setQuantity] = useState(1);
     const [product, setProduct] = useState(null);
     const { SpecificProduct, loading } = UseProducts();
-    const { AddToCart, FetchCart, cart,} = UseCart();
+    const { data:cart, isLoading} = useCart();
+    const addToCart =  useAddToCart()
     const { user } = UseAuth();
     const [addingTocart, setAddingTocart] = useState({});
     const {messages,typColo,Showmessage} = UseMessage();
@@ -24,11 +25,6 @@ function ProductDetails() {
         .then(({products}) => (setProduct(products)) )
     },[id]);
 
-    useEffect(() => {
-        FetchCart();
-    },[])
-
-    console.log(product)
 
     if (!product) {
         return (
@@ -41,7 +37,7 @@ function ProductDetails() {
         try{
 
             setAddingTocart(prev => ({...prev, [productId]: true}))
-            await AddToCart(productId,quantity)
+            await addToCart.mutateAsync(productId,quantity)
             setAddingTocart(prev => ({...prev, [productId]: false}))
 
         }catch(err){

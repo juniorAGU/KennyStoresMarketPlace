@@ -109,7 +109,7 @@ const getCart = async (req,res,next) => {
             });
         }
 
-        res.status(200).json({ success: true, cart });
+        res.status(200).json({ success: true, cart: cart });
 
     }catch(err){
         console.log(err);

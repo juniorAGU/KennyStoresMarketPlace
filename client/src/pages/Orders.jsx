@@ -4,7 +4,7 @@ import { ChevronLeft, Package, Truck, CheckCircle, Clock, ShoppingBag,Loader2 } 
 import { useState,useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { verifyPaystackPayment } from '../Services/OrderServces';
-import UseCart from '../Hooks/UseCart';
+import { useOrder } from '../Hooks/UseOrders';
 import UseMessage from '../Hooks/UseMessage';
 
 const Orders = () => {
@@ -13,7 +13,7 @@ const Orders = () => {
 
     const reference = searchParams.get("reference");
 
-    const { getOrder , orders, loading} = UseCart();
+    const { data:orders, isLoading} = useOrder();
     const {messages, Showmessage, typColo} = UseMessage();
     console.log("all Orders", orders)
 
@@ -59,7 +59,7 @@ const Orders = () => {
         );
     }
 
-    if (loading) {
+    if (isLoading) {
         return (
             <section className='w-full min-h-screen bg-[#1A1E1B] pt-20 flex justify-center items-center'>
                 <Loader2 className='animate-spin text-[#7C9A7E]' size={32} />
