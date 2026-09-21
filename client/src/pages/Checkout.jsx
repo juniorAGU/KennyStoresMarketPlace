@@ -2,14 +2,15 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ChevronLeft, Loader2, MapPin, Phone, User, Package } from 'lucide-react';
-import UseCart from '../Hooks/UseCart';
+import {useCart} from '../Hooks/UseCart';
+import { useOrder } from '../Hooks/UseOrders';
 import UseAuth from '../Hooks/UseAuth';
 import UseMessage from '../Hooks/UseMessage';
 import { createCheckout } from '../Services/OrderServces';
 
 const Checkout = () => {
     const navigate = useNavigate();
-    const { cart, FetchCart } = UseCart();
+    const { data:cart } = useCart();
 
     
 
@@ -22,18 +23,13 @@ const Checkout = () => {
         phone: ''
     });
 
-    useEffect(() => {
-        if(user?.accountType === 'buyer'){
-            FetchCart();
-        }
-    }, [user]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    console.log("cart Items", cart)
+
 
     const groupBySeller = () => {
         const grouped = {};

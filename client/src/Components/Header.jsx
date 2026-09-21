@@ -7,20 +7,19 @@ import Logo from './Logo';
 import Navbar from './Navbar';
 import UseAuth from '../Hooks/UseAuth';
 import UserDropdown from './UserDropdown';
-import UseCart from '../Hooks/UseCart';
+import { useCart } from '../Hooks/UseCart';
 
 const Header = () => {
     const [isopen, setIsopen] = useState(false);
     const { isAuthenticated, user} = UseAuth();
 
-    const {cart, FetchCart} = UseCart();
+    const { data: cart, isLoading} = useCart()
 
-    const cartLenght = cart?.items?.lenght || 0;
 
-    useEffect(() => {
-        FetchCart();
-    }, []);
+    const cartLenght = cart?.totalqauntity || 0;
+    
 
+    
     return (
         <>
             <header className='fixed top-0 left-0 right-0 z-50 bg-[#1A1E1B]/95 backdrop-blur-sm border-b border-[#252C26]'>

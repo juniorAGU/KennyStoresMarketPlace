@@ -39,6 +39,12 @@ const CreateOrder = async (req,res,next) => {
         
 
         cart.items.forEach(item => {
+            if (!item.product?.seller?._id) {
+                console.log("Skipping product with missing seller:", item.product?.name);
+                return;
+            }
+
+
             const sellerId = item.product?.seller?._id.toString();
             if(!groupSeller[sellerId]){
                 groupSeller[sellerId] = [];

@@ -2,52 +2,46 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, Trash2, Minus, Plus, ShoppingBag, Loader2 } from 'lucide-react';
-import UseCart from '../Hooks/UseCart';
+import {useCart,useAddToCart,useRemoveCartItem,useUpdateCartQuantity,usedeleteCart} from '../Hooks/UseCart';
 import UseAuth from '../Hooks/UseAuth';
 import UseMessage from '../Hooks/UseMessage';
 
 const Cart = () => {
-    const { AddToCart, FetchCart, UpdateCart, RemoveItem, cleraAllCart, cart, loading, error,setCart,} = UseCart();
+    const {   data:cart, isLoading, isError,} = useCart();
+    const addToCart = useAddToCart();
+    const updateCart = useUpdateCartQuantity();
+    const removeCartItem = useRemoveCartItem()
+    const deleteCart = usedeleteCart()
     const {messages,Showmessage,typColo } = UseMessage();
     const { user } = UseAuth();
     
 
-    useEffect(() => {
-        if(user?.accountType === 'buyer'){
-            FetchCart();
-        }
-    }, [user]);
+    
 
     const handleQuantity = async (itemId, newQty) => {
         if (newQty < 1) return;
 
-        // setCart(prev => ({
-        //     ...prev,
-        //     items: prev.items.map(item => item._id === itemId ? { ...item, quantity: newQty} : item),
-        //     totalprice: prev.items.reduce((sum, pro) => sum + (pro.price * (pro._id === itemId ? newQty : pro.quantity)),0),
-        //     totalquantity: prev.items.reduce((sum,pro) => sum + (pro._id === itemId ? newQty : pro.quantity),0)
-        // }))
+        
         try{
 
-            await UpdateCart(itemId, newQty);
+            await updateCart.mutateAsync(itemId, newQty);
 
         }catch(err){
             console.log(" handleQUANTITY Error!!!",err?.response?.data?.message);
             Showmessage("failed", err?.response?.data?.message || "unable to update quantity")
-            FetchCart();
+            
         }
         
         
     };
 
-    console.log("cart Items", cart);
+    
 
     const handleRemove = async (itemId) => {
-        await RemoveItem(itemId);
-        FetchCart();
+        await removeCartItem.mutateAsync(itemId);
     };
 
-    if (loading) {
+    if (isLoading) {
         return (
             <section className='w-full min-h-screen bg-[#1A1E1B] pt-20 flex justify-center items-center'>
                 <Loader2 className='animate-spin text-[#7C9A7E]' size={32} />
@@ -91,7 +85,7 @@ const Cart = () => {
                         </article>
                     </article>
                     <button 
-                        onClick={cleraAllCart}
+                        onClick={deleteCart()}
                         className='text-[#E8EDE8]/50 text-sm hover:text-red-400 transition-colors'
                     >
                         Clear All

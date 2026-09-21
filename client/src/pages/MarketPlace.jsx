@@ -11,7 +11,7 @@ import  UseAuth from '../Hooks/UseAuth'
 import UseComments from '../Hooks/UseComments';
 import UseMessage from '../Hooks/UseMessage';
 import { getLikes1,createLikes1,getComments } from '../Services/CommentService';
-import UseCart from '../Hooks/UseCart';
+import { useCart,useAddToCart } from '../Hooks/UseCart';
 
 
 const MarketPlace = () => {
@@ -21,7 +21,9 @@ const MarketPlace = () => {
     const { user } = UseAuth();
     const { PostComment, GetComments,} = UseComments();
     const { Showmessage,typColo,messages} = UseMessage();
-    const { AddToCart, FetchCart, cart,} = UseCart();
+
+    const {  data:cart, isLoading} = useCart();
+    const adddToCart = useAddToCart();
     
 
     
@@ -33,10 +35,6 @@ const MarketPlace = () => {
     const [commentCounts, setCommentCounts] = useState({});
     const [addingToCart, setAddingToCart] = useState({});
 
-    
-    useEffect(() => {
-        FetchCart();
-    },[]);
 
     useEffect(() => {
         AOS.init({ duration: 800, once: false });
@@ -171,7 +169,7 @@ const MarketPlace = () => {
                 {/* Product Cards — Instagram style */}
                 <article className='space-y-8'>
                     {FilterProducts.map((product, index) => {
-                        console.log("products", FilterProducts)
+                        
                         
                         const cartQuantity = GetQuantityforcart(product._id);
                         const isMax = cartQuantity >= product.quantity;
@@ -285,7 +283,7 @@ const MarketPlace = () => {
                                 <motion.button
                                     onClick={async () => {
                                         setAddingToCart(prev => ({ ...prev, [product._id]: true }));
-                                        await AddToCart(product._id, 1);
+                                        await adddToCart.mutateAsync({productId:product._id, quantity:1});
                                         setAddingToCart(prev => ({ ...prev, [product._id]: false }));
                                     }}
                                     disabled={isMax}
