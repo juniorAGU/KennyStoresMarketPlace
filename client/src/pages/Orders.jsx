@@ -5,6 +5,7 @@ import { useState,useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { verifyPaystackPayment } from '../Services/OrderServces';
 import { useOrder } from '../Hooks/UseOrders';
+import {useVerifyPayment} from '../Hooks/UseVerifyPayment'
 import UseMessage from '../Hooks/UseMessage';
 
 const Orders = () => {
@@ -13,20 +14,11 @@ const Orders = () => {
 
     const reference = searchParams.get("reference");
 
+
     const { data:orders, isLoading} = useOrder();
+    const {isError, error} = useVerifyPayment(reference);
     const {messages, Showmessage, typColo} = UseMessage();
     console.log("all Orders", orders)
-
-    useEffect(() => {
-    if (reference) {
-        verifyPaystackPayment(reference)
-            .then(() => getOrder())  
-            .catch(err => Showmessage("failed", err?.response?.data?.message || "payment Error try again"));
-    }
-
-    getOrder();
-
-}, [reference]);
 
     const getStatusIcon = (status) => {
         switch (status) {

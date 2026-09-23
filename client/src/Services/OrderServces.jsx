@@ -7,27 +7,8 @@ export const createCheckout = async (userdata) => {
     return data
 }
 
-export const verifyPaystackPayment = async (reference) => {
 
-    const { data } = await API.get(`/api/verify/${reference}`)
 
-    return data
-}
-
-export const getAllOrders = async () => {
-
-    const { data } = await API.get("/api/orders");
-
-    return data 
-}
-
-export const getSpec = async (orderId) => {
-    console.log(orderId)
-
-    const { data } = await API.get(`/api/orders/${orderId}`)
-
-    return data
-}
 
 export const getSellersinfo = async (sellerId) => {
 

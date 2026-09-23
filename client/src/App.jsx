@@ -6,7 +6,6 @@ import LayeroutsSelector from './Layouts/LayeroutsSelector';
 import AuthContectProvider from './Context/AuthContect';
 import ProductcontextProvider from './Context/Productcontext';
 import CommentsProvider from './Context/CommentsProvider';
-import Cartprovider from './Context/Cartprovider';
 import Payoutprovider from './Context/Payoutprovider';
 
 // internal packages
@@ -37,7 +36,6 @@ const router = createBrowserRouter([
 function App() {
   return(
     <AuthContectProvider>
-      <Cartprovider>
         <CommentsProvider>
           <ProductcontextProvider>
             <Payoutprovider>
@@ -45,7 +43,6 @@ function App() {
             </Payoutprovider>
           </ProductcontextProvider>
         </CommentsProvider>
-      </Cartprovider>
     </AuthContectProvider>
     
   )
