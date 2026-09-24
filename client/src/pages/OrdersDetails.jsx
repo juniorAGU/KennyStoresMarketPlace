@@ -1,27 +1,21 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useState,useEffect } from 'react';
-import { getSpec,buyerDisput } from '../Services/OrderServces';
+import { buyerDisput } from '../Services/OrderServces';
 import {ChevronLeft, Package, Truck, CheckCircle, Clock, MapPin, Phone, User, Loader2} from 'lucide-react';
 import UseMessage from '../Hooks/UseMessage';
+import {useSpecificOrder} from '../Hooks/UseOrders'
 
 function OrdersDetails() {
 
     const  { orderId }  = useParams();
-    const [order, setOrder] = useState(null);
-    const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true)
     const [showDispute, setShowDispute] = useState(false);
     const { messages, Showmessage, typColo} = UseMessage();
     const [reason, setReason] = useState('');
     const [disputloading, setDisputloading] = useState(false)
 
-    useEffect(() => {
-        getSpec(orderId)
-        .then(({order}) => (setOrder(order)))
-        .catch(err => (setError(err.response?.data?.message || "unable to fetch your order")))
-        .finally(() => setLoading(false))
-    },[orderId]);
+    const {data:order, isLoading, error,isError} = useSpecificOrder(orderId);
 
     const handleDispute = async () => {
         setDisputloading(true)
@@ -62,11 +56,11 @@ function OrdersDetails() {
     const timeline = ['pending', 'paid', 'shipped', 'delivered'];
     const currentStep = timeline.indexOf(order?.status);
 
-    if (loading) return <Loader2 className='animate-spin' />;
-    if (error) return <p className='text-red-400'>{error}</p>;
+    if (isLoading) return <Loader2 className='animate-spin' />;
+    if (isError) return <p className='text-red-400'>{isError}</p>;
     if (!order) return <p className='text-white'>Order not found</p>;
 
-    if (loading) {
+    if (isLoading) {
         return (
             <section className='w-full min-h-screen bg-[#1A1E1B] pt-20 flex justify-center items-center'>
                 <Loader2 className='animate-spin text-[#7C9A7E]' size={32} />
@@ -74,12 +68,12 @@ function OrdersDetails() {
         );
     }
 
-    if (error || !order) {
+    if (isError || !order) {
         return (
             <section className='w-full min-h-screen bg-[#1A1E1B] pt-20 px-4 flex justify-center items-center'>
                 <article className='text-center'>
                     <Package size={64} className='text-[#E8EDE8]/20 mx-auto mb-4' />
-                    <p className='text-[#E8EDE8]/50'>{error || 'Order not found'}</p>
+                    <p className='text-[#E8EDE8]/50'>{isError || 'Order not found'}</p>
                     <Link to='/orders' className='text-[#7C9A7E] hover:underline mt-2 inline-block'>Back to Orders</Link>
                 </article>
             </section>

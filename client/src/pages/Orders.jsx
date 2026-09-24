@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { ChevronLeft, Package, Truck, CheckCircle, Clock, ShoppingBag,Loader2 } from 'lucide-react';
 import { useState,useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { verifyPaystackPayment } from '../Services/OrderServces';
 import { useOrder } from '../Hooks/UseOrders';
 import {useVerifyPayment} from '../Hooks/UseVerifyPayment'
 import UseMessage from '../Hooks/UseMessage';
