@@ -24,7 +24,7 @@ const Cart = () => {
         
         try{
 
-            await updateCart.mutateAsync(itemId, newQty);
+            await updateCart.mutateAsync({itemId, quantity:newQty});
 
         }catch(err){
             console.log(" handleQUANTITY Error!!!",err?.response?.data?.message);
@@ -38,7 +38,7 @@ const Cart = () => {
     
 
     const handleRemove = async (itemId) => {
-        await removeCartItem.mutateAsync(itemId);
+        await removeCartItem.mutateAsync({productId:itemId});
     };
 
     if (isLoading) {
@@ -85,7 +85,7 @@ const Cart = () => {
                         </article>
                     </article>
                     <button 
-                        onClick={deleteCart()}
+                        onClick={() => deleteCart.mutate()}
                         className='text-[#E8EDE8]/50 text-sm hover:text-red-400 transition-colors'
                     >
                         Clear All

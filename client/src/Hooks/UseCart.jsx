@@ -18,8 +18,8 @@ export function useCart() {
     return useQuery({
         queryKey: cartKey.all,
         queryFn: async () => {
-            const data = await API.get('/api/cart') 
-            return data.cart
+            const response = await API.get('/api/cart') 
+            return response?.data?.cart
         },
         enabled: !!user && user.accountType === 'buyer', 
         staleTime: 100 * 60 * 5
@@ -53,11 +53,12 @@ export const useUpdateCartQuantity = () => {
         mutationFn: async({itemId, quantity}) => {
 
             const { data } = await API.patch(`/api/cart/${itemId}`, { quantity })
+            console.log('response 2', data)
 
-            return data
+            return data.data
         },
         onSuccess: () => {
-            queryClient.infiniteQuery({queryKey: cartKey.all})
+            queryClient.invalidateQueries({queryKey: cartKey.all})
         }
     })
 }
@@ -74,7 +75,7 @@ export const useRemoveCartItem = () => {
             return data
         },
         onSuccess: () => {
-            queryClient.infiniteQuery({queryKey: cartKey.all})
+            queryClient.invalidateQueries({queryKey: cartKey.all})
         }
     })
 };
@@ -93,7 +94,7 @@ export const usedeleteCart = () => {
         },
 
         onSuccess: () => {
-            queryClient.infiniteQuery({queryKey: cartKey.all})
+            queryClient.invalidateQueries({queryKey: cartKey.all})
         }
     })
 } 
