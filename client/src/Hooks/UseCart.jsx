@@ -1,5 +1,4 @@
 import { useContext } from "react";
-import { CartContext } from "../Context/Cartprovider";
 import {useQuery,useMutation,useQueryClient} from '@tanstack/react-query';
 import API from "../Services/axiosConfig";
 import UseAuth from "./UseAuth";
